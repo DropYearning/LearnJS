@@ -886,10 +886,64 @@
     - 这个对象属于历史遗留对象，对于现代Web页面来说，由于大量使用AJAX和页面交互，简单粗暴地调用`history.back()`可能会让用户感到非常愤怒。新手开始设计Web页面时喜欢在登录页登录成功时调用`history.back()`，试图回到登录前的页面。这是一种错误的方法。
     - 任何情况，你都不应该使用`history`这个对象了。
 
+### 5.2 DOM树
+- HTML 文档的主干是标签（tag）。根据**文档对象模型（DOM）**，每个 HTML 标签都是一个对象。嵌套的标签是闭合标签的“子标签（children）”。标签内的文本也是一个对象。所有这些对象都可以通过 JavaScript 来访问，我们可以使用它们来修改页面。
+    - 例如，`document.body` 是表示 `<body>` 标签的对象。
+- 让我们从下面这个简单的文档（document）开始：
+    ```html
+    <!DOCTYPE HTML>
+    <html>
+        <head>
+            <title>About elk</title>
+        </head>
+        <body>
+            The truth about elk.
+        </body>
+    </html>
+    ```
+- DOM 将 HTML 表示为标签的树形结构。它看起来如下所示：![XC8m5w](https://gitee.com/pxqp9W/testmarkdown/raw/master/imgs/2020/05/XC8m5w.png)
+- 由于HTML文档被浏览器解析后就是一棵DOM树，要改变HTML的结构，就需要通过JavaScript来操作DOM。始终记住DOM是一个树形结构。操作一个DOM节点实际上就是这么几个操作：
+  * 更新：更新该DOM节点的内容，相当于更新了该DOM节点表示的HTML的内容；
+
+  * 遍历：遍历该DOM节点下的子节点，以便进行进一步操作；
+
+  * 添加：在该DOM节点下新增一个子节点，相当于动态增加了一个HTML节点；
+
+  * 删除：将该节点从HTML中删除，相当于删掉了该DOM节点的内容以及它包含的所有子节点。
+- 在操作一个DOM节点前，我们需要通过各种方式先拿到这个DOM节点。最常用的方法是`document.getElementById()`和`document.getElementsByTagName()`，以及CSS选择器`document.getElementsByClassName()`。
+    - 由于ID在HTML文档中是唯一的，所以`document.getElementById()`可以直接定位唯一的一个DOM节点。`document.getElementsByTagName()`和`document.getElementsByClassName()`总是返回一组DOM节点。要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。
+    ```js
+    // 返回ID为'test'的节点：
+    var test = document.getElementById('test');
+
+    // 先定位ID为'test-table'的节点，再返回其内部所有tr节点：
+    var trs = document.getElementById('test-table').getElementsByTagName('tr');
+
+    // 先定位ID为'test-div'的节点，再返回其内部所有class包含red的节点：
+    var reds = document.getElementById('test-div').getElementsByClassName('red');
+
+    // 获取节点test下的所有直属子节点:
+    var cs = test.children;
+
+    // 获取节点test下第一个、最后一个子节点：
+    var first = test.firstElementChild;
+    var last = test.lastElementChild;
+    ```
+- 第二种方法是使用`querySelector()`和`querySelectorAll()`，需要了解selector语法，然后使用条件来获取节点，更加方便：
+    ```js
+    // 通过querySelector获取ID为q1的节点：
+    var q1 = document.querySelector('#q1');
+    // 通过querySelectorAll获取q1节点内的符合条件的所有节点：
+    var ps = q1.querySelectorAll('div.highlighted > p');
+    ```
+    - 注意：低版本的IE<8不支持`querySelector`和`querySelectorAll`。IE8仅有限支持
+- 严格地讲，我们这里的DOM节点是指`Element`，但是DOM节点实际上是`Node`，在HTML中，`Node`包括`Element`、`Comment`、`CDATA_SECTION`等很多种，以及根节点`Document`类型，但是，绝大多数时候我们只关心`Element`，也就是实际控制页面结构的`Node`，其他类型的`Node`忽略即可。根节点`Document`已经自动绑定为全局变量`document`。
 
 
+### 5.3 
 
 
 ## 参考资料
+- [现代 JavaScript 教程](https://zh.javascript.info/)
 - [JavaScript教程 - 廖雪峰的官方网站](https://www.liaoxuefeng.com/wiki/1022910821149312)
-
+- [DOM 树](https://zh.javascript.info/dom-nodes)
